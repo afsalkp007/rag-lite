@@ -56,48 +56,6 @@ flowchart TD
 
 ---
 
-## 🖥️ Terminal CLI Preview
-
-```text
-╭────────────────────── ⚡ RAG Lite Knowledge Engine Online ──────────────────────╮
-│ Indexed Documents: 01 Stripe Billing Guide, 02 Engineering Onboarding,        │
-│                    03 Cloud Incident Sop                                      │
-│ Total Vector Chunks: 18                                                       │
-│ Abstention Threshold: 0.40                                                    │
-╰───────────────────────────────────────────────────────────────────────────────╯
-
-Ask RAG Lite > What is our automated rollback threshold for Kubernetes canary deployments?
-
-╭────────────────────────────── 💬 Grounded Answer ─────────────────────────────╮
-│ Based on Engineering Team Onboarding: If the HTTP 5xx error rate exceeds      │
-│ 0.5% or latency p99 degrades by more than 20% compared to baseline, the       │
-│ rollout aborts immediately and reverts traffic to the previous stable         │
-│ release.                                                                      │
-╰────────────────────── Top Similarity: 0.7241 | Latency: 1.84ms ───────────────╯
-
-                           📚 Retrieved Context Chunks                          
-┏━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ Rank ┃ Document & Chunk ID      ┃ Cosine Similarity ┃ Context Excerpt        ┃
-┡━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
-│  #1  │ Engineering Onboarding   │      0.7241       │ Automated Rollback: If │
-│      │ doc-2_chunk-2            │                   │ the HTTP 5xx error     │
-│      │                          │                   │ rate exceeds 0.5%...   │
-└──────┴──────────────────────────┴───────────────────┴────────────────────────┘
-```
-
----
-
-## ⚖️ Engineering & Product Trade-offs (AI PM Rationale)
-
-| Decision | Choice | Rationale & Trade-off |
-| :--- | :--- | :--- |
-| **Abstention vs Guessing** | Hard Threshold ($\tau = 0.40$) | In enterprise support, a confident hallucination damages trust far more than an explicit "I don't know". Abstaining when similarity is low prevents brand risk. |
-| **Chunk Size & Overlap** | 500 Chars / 100 Overlap | Chunks under 200 chars lack context; chunks over 1,500 chars dilute retrieval precision. 500 chars captures ~2-3 sentences, and 100-char overlap prevents boundary amnesia. |
-| **Retrieval Depth ($k$)** | $k=3$ | Retrieving $k=10$ increases token consumption by $300\%$ with diminishing recall gains. $k=3$ provides sufficient diversity while keeping prompt latency under 1 second. |
-| **Vector Index** | In-Memory NumPy Matrix | Cloud vector DBs (Pinecone, Qdrant Cloud) add external network latency and infrastructure bills. For knowledge bases under 100k chunks, vectorized NumPy executes in $<2\text{ms}$. |
-
----
-
 ## 🚀 Quickstart
 
 ### 1. Clone & Set Up Environment
